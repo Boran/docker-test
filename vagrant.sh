@@ -5,6 +5,10 @@
 # Note:
 # - expects to run as root/sudo
 
+#TODO echo "-- speed up login --
+#https://gist.github.com/jedi4ever/5657094
+#echo -e "\nUseDNS no  # Disable DNS lookups" >> /etc/ssh/sshd_config  && sudo /etc/init.d/ssh restart
+
 echo "------------ Install docker + tools ------------"
 
 echo "---- docker group -----"
@@ -38,10 +42,16 @@ docker --version
 echo "---- permissions -----"
 chown -R www-data /var/run/docker.sock
 
+
 echo "---- environment -----"
-locale-gen UTF-8
+echo "---- Timezone/local for Switzerland"
+echo -e "\nLC_ALL=en_US.UTF-8" >> /etc/default/locale
+locale-gen UTF-8 en_US en_US.UTF-8 de_CH de_CH.UTF-8
+dpkg-reconfigure locales
+timedatectl set-timezone Europe/Zurich
+
 git config --global push.default matching
-echo "---- Set VM name to webfact-vm --"
+echo "---- Set VM name to webfact-vm "
 sudo hostname docker-test
 echo docker-test > /etc/hostname
 
