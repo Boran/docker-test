@@ -29,4 +29,6 @@ ls /vagrant
 
 TODO
 ----
-Use a more lightweight base image than Ubuntu 14.04
+. Use a more lightweight base image than Ubuntu 14.04
+. Copy over default .bashrc from the host
+
