@@ -1,0 +1,14 @@
+---
+- name: docker-01
+  box: ubuntu/trusty64
+  ram: 512
+  # if static IP needed
+  #ip: 172.17.9.101
+  # we are behind a proxy? (see Vagrantfile)
+  proxy: 0
+
+#- name: docker-02
+#  box: ubuntu/trusty64
+#  ram: 512
+#  ip: 172.17.9.102
+#  proxy: 0
