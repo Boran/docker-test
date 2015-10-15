@@ -12,37 +12,38 @@ VAGRANTFILE_API_VERSION = "2"
 require 'yaml'
 servers = YAML.load_file('servers.yaml')
 
-# The "2" in Vagrant.configure configures the configuration version 
-Vagrant.configure(2) do |config|
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "ubuntu/trusty64"
-  #config.vm.box_check_update = false
+  # Enable now and again for check for new boxes:
+  config.vm.box_check_update = false
 
   # Iterate through entries in YAML file
   servers.each do |servers|
-    #config.vm.define no-proxy["name"] do |srv|
     config.vm.define servers["name"] do |srv|
       srv.vm.box = servers["box"]
-      if servers["proxy"] == 1
-        # Proxies: if you network requires outgoing access via a proxy
+
+      if ENV["http_proxy"]
+        # Detect proxies and configure
         if Vagrant.has_plugin?("vagrant-proxyconf")
-          config.proxy.http     = "http://proxy.example.ch:80"
-          config.proxy.https    = "http://proxy.example.ch:80"
-          config.proxy.ftp      = "http://proxy.example.ch:80"
-          config.proxy.no_proxy = "localhost,127.0.0.1,.example.ch"
+          config.proxy.http     = ENV.fetch('http_proxy')
+          if ENV["https_proxy"]
+            config.proxy.https    = ENV.fetch('https_proxy')
+          end
+          if ENV["no_proxy"]
+             config.proxy.no_proxy = ENV.fetch('no_proxy')
+          end
         end
       end
 
-      srv.vm.provision :shell, path: "vagrant.sh"
       srv.vm.hostname = servers["name"]
       # Option: enable a private network between Servers
       #srv.vm.network "private_network", ip: servers["ip"]
 
       srv.vm.provider :virtualbox do |vb|
         vb.name = servers["name"]
+        # resources:
         vb.memory = servers["ram"]
-        # Display the VirtualBox GUI when booting the machine
-        #vb.gui = true
         #vb.cpus = 2
         # Limit cpu load
         #vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
@@ -58,6 +59,13 @@ Vagrant.configure(2) do |config|
       # the path on the guest to mount the folder. And the optional third
       # argument is a set of non-required options.
       # config.vm.synced_folder "../data", "/vagrant_data"
+
+      # Provision the VM with docker + tools
+      srv.vm.provision :shell, path: "vagrant.sh"
+      # optional: after vagrant.sh when proxies are set, do 
+      #           additional provisioning
+      #srv.vm.provision :shell, inline: "docker pull alpine"
+      #srv.vm.provision :shell, inline: "docker images"
     end
   end
 

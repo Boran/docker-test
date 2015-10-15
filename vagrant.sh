@@ -42,20 +42,9 @@ timedatectl set-timezone Europe/Zurich
 echo "---- environment: git -----"
 git config --global push.default matching
 
-# if a webserver needed to control docker
+# Optional example: if a webserver needed to control docker
 #echo "---- permissions -----"
 #chown -R www-data /var/run/docker.sock
-#
-#echo "---- download alpine linux image to test docker -----"
-#docker pull alpine
-#
-#echo "---- Install container via docker-compose  -----"
-#cd /vagrant/somedir
-#docker-compose up -d somecontainer
-
-#Maybe later: echo "-- speed up login --
-#https://gist.github.com/jedi4ever/5657094
-#echo -e "\nUseDNS no  # Disable DNS lookups" >> /etc/ssh/sshd_config  && sudo /etc/init.d/ssh restart
 
 echo "---- provisioning done `date +%Y%m%d` ----- "
 
